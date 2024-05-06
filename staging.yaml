@@ -1,0 +1,5 @@
+runtime: nodejs20
+service: chat-app-staging
+
+vpc_access_connector:
+    name: "projects/sylvan-mesh-420712/locations/asia-southeast2/connectors/connect-sql"
