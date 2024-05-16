@@ -67,7 +67,7 @@ exports.googleLogin = async (access_token) => {
             name: googleData?.name,
             email: googleData?.email,
             password: "",
-            photo: googleData?.picture,
+            picture: googleData?.picture,
         });
     }
 
