@@ -40,6 +40,10 @@ exports.createUser = async (payload) => {
         payload.photo = imageUpload.secure_url;
     }
 
+    if (payload?.picture) {
+        payload.photo = payload?.picture;
+    }
+
     const data = await User.create(payload);
 
     return data;
