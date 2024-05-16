@@ -1,4 +1,4 @@
-const { register, login, getProfile } = require("../../usecases/auth");
+const { register, login, googleLogin } = require("../../usecases/auth");
 const { validateRegister, validateLogin } = require("../../helpers/validation");
 
 exports.register = async (req, res, next) => {
@@ -43,9 +43,31 @@ exports.login = async (req, res, next) => {
     }
 };
 
+exports.googleLogin = async (req, res, next) => {
+    try {
+        const { access_token } = req?.body;
+
+        if (!access_token) {
+            throw {
+                statusCode: 400,
+                message: "Access token must be provided!",
+            };
+        }
+
+        const data = await googleLogin(access_token);
+
+        res.status(200).json({
+            message: "Success",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.profile = async (req, res, next) => {
     try {
-        const data = await getProfile(req.user.id);
+        const data = req.user;
 
         res.status(200).json({
             message: "Success",
