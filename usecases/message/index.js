@@ -1,4 +1,5 @@
 const messageRepo = require("../../repositories/message");
+const userRepo = require("../../repositories/user");
 
 exports.getAllMessages = async () => {
     const data = await messageRepo.getAllMessages();
@@ -13,6 +14,8 @@ exports.getMessageById = async (id) => {
 };
 
 exports.createMessage = async (payload) => {
+    await userRepo.getUserById(payload.sender_id);
+
     const data = await messageRepo.createMessage(payload);
 
     return data;
@@ -20,6 +23,8 @@ exports.createMessage = async (payload) => {
 
 exports.updateMessage = async (id, payload) => {
     await messageRepo.getMessageById(id);
+
+    await userRepo.getUserById(payload.sender_id);
 
     const data = await messageRepo.updateMessage(id, payload);
 
