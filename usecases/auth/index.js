@@ -1,10 +1,11 @@
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const {
     getUserByEmail,
     createUser,
     getUserById,
+    getGoogleAccessTokenData,
 } = require("../../repositories/user");
+const { createToken } = require("../../helpers/createToken");
 
 exports.register = async (payload) => {
     const existingUser = await getUserByEmail(payload.email);
@@ -15,20 +16,9 @@ exports.register = async (payload) => {
 
     const user = await createUser(payload);
 
-    delete user.dataValues.password;
+    delete user?.dataValues?.password;
 
-    const jwtPayload = {
-        id: user.id,
-    };
-
-    const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
-        expiresIn: "3h",
-    });
-
-    const data = {
-        user,
-        token,
-    };
+    const data = createToken(user);
 
     return data;
 };
@@ -58,18 +48,32 @@ exports.login = async (payload) => {
         delete user?.password;
     }
 
-    const jwtPayload = {
-        id: user.id,
-    };
+    const data = createToken(user);
 
-    const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
-        expiresIn: "3h",
-    });
+    return data;
+};
 
-    const data = {
-        user,
-        token,
-    };
+exports.googleLogin = async (access_token) => {
+    const googleData = await getGoogleAccessTokenData(access_token);
+
+    if (!googleData) {
+        throw { statusCode: 400, message: "Invalid access token" };
+    }
+
+    let user = await getUserByEmail(googleData?.email);
+
+    if (!user) {
+        user = await createUser({
+            name: googleData?.name,
+            email: googleData?.email,
+            password: "",
+            photo: googleData?.picture,
+        });
+    }
+
+    delete user?.dataValues?.password;
+
+    const data = createToken(user);
 
     return data;
 };

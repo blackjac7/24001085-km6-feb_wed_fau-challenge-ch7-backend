@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const path = require("path");
 const bcrypt = require("bcrypt");
+const axios = require("axios");
 const { User } = require("../../models");
 const { uploader } = require("../../helpers/cloudinary");
 
@@ -40,6 +41,14 @@ exports.createUser = async (payload) => {
     }
 
     const data = await User.create(payload);
+
+    return data;
+};
+
+exports.getGoogleAccessTokenData = async (access_token) => {
+    const { data } = await axios.get(
+        `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
+    );
 
     return data;
 };

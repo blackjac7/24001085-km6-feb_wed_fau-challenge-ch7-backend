@@ -22,14 +22,10 @@ exports.validateRegister = (payload) => {
         };
     }
 
-    if (!gender || typeof gender !== "string") {
-        throw {
-            statusCode: 400,
-            message: "Gender is required and must be a string",
-        };
-    }
-
-    if (gender.toLowerCase() !== "male" && gender.toLowerCase() !== "female") {
+    if (
+        gender?.toLowerCase() !== "male" &&
+        gender?.toLowerCase() !== "female"
+    ) {
         throw {
             message: "Gender must be male or female",
             statusCode: 400,
