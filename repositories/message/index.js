@@ -1,7 +1,15 @@
 const { Message } = require("../../models");
 
 exports.getAllMessages = async () => {
-    const data = await Message.findAll();
+    const opt = {
+        include: [
+            {
+                association: "User",
+                attributes: ["name", "photo"],
+            },
+        ],
+    };
+    const data = await Message.findAll(opt);
 
     if (!data || data.length === 0) {
         throw { statusCode: 404, message: "No messages found" };
