@@ -1,16 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const messageController = require("../controllers/message");
+const { authMiddleware } = require("../middlewares/auth");
 
 router
-    .route("/")
-    .get(messageController.getAllMessages)
-    .post(messageController.createMessage);
+  .route("/")
+  .get(authMiddleware, messageController.getAllMessages)
+  .post(authMiddleware, messageController.createMessage);
 
 router
-    .route("/:id")
-    .get(messageController.getMessageById)
-    .put(messageController.updateMessage)
-    .delete(messageController.deleteMessage);
+  .route("/:id")
+  .get(authMiddleware, messageController.getMessageById)
+  .put(authMiddleware, messageController.updateMessage)
+  .delete(authMiddleware, messageController.deleteMessage);
 
 module.exports = router;
