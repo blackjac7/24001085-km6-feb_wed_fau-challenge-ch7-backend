@@ -46,6 +46,13 @@ exports.createMessage = async (req, res, next) => {
             };
         }
 
+        if (!payload.message_content || payload.message_content == "") {
+            return next({
+                message: "Message must be provided!",
+                statusCode: 400,
+            });
+        }
+
         if (payload.sender_id) {
             payload.sender_id = +payload.sender_id;
         } else {
@@ -56,6 +63,9 @@ exports.createMessage = async (req, res, next) => {
         }
 
         const data = await messageUsecase.createMessage(payload);
+
+        // Emit event
+        req.io.emit("message", payload.message_content);
 
         res.status(201).json({
             message: "Message created successfully",
