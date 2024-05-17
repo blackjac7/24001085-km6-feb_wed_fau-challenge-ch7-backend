@@ -49,6 +49,37 @@ exports.createUser = async (payload) => {
     return data;
 };
 
+exports.updateUser = async (id, payload) => {
+    if (payload.password) {
+        payload.password = await bcrypt.hash(payload.password, 10);
+    }
+
+    if (payload.photo) {
+        const { photo } = payload;
+
+        photo.publicId = crypto.randomBytes(16).toString("hex");
+
+        photo.name = `${photo.publicId}${path.parse(photo.name).ext}`;
+
+        const imageUpload = await uploader(photo);
+
+        payload.photo = imageUpload.secure_url;
+    }
+
+    if (payload?.picture) {
+        payload.photo = payload?.picture;
+    }
+
+    const opt = {
+        where: { id },
+        returning: true,
+    };
+
+    const data = await User.update(payload, opt);
+
+    return data;
+};
+
 exports.getGoogleAccessTokenData = async (access_token) => {
     const { data } = await axios.get(
         `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
